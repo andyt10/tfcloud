@@ -143,8 +143,6 @@ resource "aws_instance" "ec2" {
     volume_type           = "gp2"
   }
 
-  user_data = file("scripts/ec2_userdata.tpl")
-
   tags = {
     Name  = "${local.name_prefix}ec2"
     Owner = local.owner
