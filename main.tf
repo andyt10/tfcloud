@@ -1,3 +1,8 @@
+locals {
+  vpc_cidr    = "172.23.0.0/16"
+  name_prefix = "fooandy"
+  owner       = "andyms"
+}
 data "aws_ami" "amz_linux" {
   most_recent = true
   owners      = ["amazon"]
@@ -78,9 +83,9 @@ resource "aws_network_acl_rule" "nacl_ingress_http" {
 
 resource "aws_subnet" "sn" {
   vpc_id     = aws_vpc.vpc.id
-  cidr_block = local.sn_cidr
+  cidr_block = cidrsubnet(local.vpc_cidr, 8, 1)
 
-  tags = {
+  tags = { 
     Name  = "${local.name_prefix}sn"
     Owner = local.owner
   }
@@ -129,7 +134,7 @@ resource "aws_security_group_rule" "sg_egress_all" {
 
 resource "aws_instance" "ec2" {
   ami                         = data.aws_ami.amz_linux.id
-  instance_type               = local.instance_type
+  instance_type               = var.instance_type == null ? "t3.4xlarge" : var.instance_type
   subnet_id                   = aws_subnet.sn.id
   associate_public_ip_address = true
 
